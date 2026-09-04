@@ -1,0 +1,19 @@
+---
+description: Create scoped config rules with official docs when new homelab services appear
+alwaysApply: true
+---
+
+# Service Config Rule Bootstrap
+
+When a **new** hosted service gets a `services/{name}/` folder (deployed or actively being configured):
+
+1. Add `.cursor/rules/homelab-{name}.mdc` if it does not exist yet.
+2. Set `alwaysApply: false` and `globs: services/{name}/**` (add extra patterns only if configs live elsewhere, e.g. `**/*.caddy` for Caddy).
+3. Keep the rule **under 50 lines** — one concern: config correctness from official sources.
+4. Include **official documentation links only** (project docs, man pages, upstream wiki). No blog posts as primary authority.
+5. Add homelab-specific constraints from `homelab.mdc` (rootless default, paths, ports) — do not duplicate the full services table.
+6. Instruct the agent to **verify options against official docs** before proposing changes; prefer upstream syntax over memory.
+
+Also update `homelab.mdc` and `plans.md` per `homelab-rule-maintenance.mdc`.
+
+**Do not** create a rule for roadmap-only mentions with no `services/{name}/` folder yet.

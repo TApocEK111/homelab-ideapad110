@@ -1,0 +1,71 @@
+---
+description: Keep homelab.mdc updated when infrastructure facts change
+alwaysApply: true
+---
+
+# Homelab Rule Maintenance
+
+Two docs, two roles:
+
+| File | Role |
+|------|------|
+| `.cursor/rules/homelab.mdc` | **Current state** — what is deployed and how it works today |
+| `plans.md` | **Future intent** — services, improvements, and infrastructure not yet done |
+
+Keep both current. Stale rules or plans mislead every future session.
+
+## When to Update
+
+Update `homelab.mdc` in the **same conversation** when:
+
+- A new service, port, path, or tool is added
+- Existing facts change (UFW rules, IP, domain, quadlet location, auth method)
+- The user reveals info that **conflicts** with what's in the rule
+- A planned item becomes current (e.g. backups configured, Caddy deployed) — also update `plans.md`
+- A decision is made that overrides a previous plan
+
+Update `plans.md` in the **same conversation** when:
+
+- A new service, improvement, or infrastructure change is **planned but not deployed**
+- Plan priority or scope changes (e.g. "strongly planned" → dropped, or maybe → decided)
+- Something listed as planned is **completed or cancelled** — remove or mark it there; move facts to `homelab.mdc` only when deployed
+
+## How to Update
+
+1. Edit `homelab.mdc` directly — do not create duplicate docs for the same facts.
+2. Replace outdated values; do not append conflicting entries.
+3. Briefly tell the user what changed and why.
+4. If unsure whether a detail is permanent, ask before writing it in.
+
+## Conflict Handling
+
+When new info contradicts the rule:
+
+```
+Rule says:     vaultwarden on 10455, rootless
+User says:     moved behind Caddy on 443
+→ Update the services table and UFW section; remove obsolete port exposure notes.
+```
+
+Do not silently prefer the rule or the user's latest message — reconcile and update the rule to match reality (or stated intent).
+
+## What Belongs Where
+
+| Update | Where |
+|--------|-------|
+| New/changed **deployed** service | `homelab.mdc` — Services table, Repo Structure |
+| New service added | Also create `services/{name}/` folder and scoped `.cursor/rules/homelab-{name}.mdc` (see `homelab-service-config-rules.mdc`) |
+| UFW change (live) | `homelab.mdc` — Firewall |
+| Domain/DNS/remote access (live) | `homelab.mdc` — DNS & Remote Access |
+| `/etc/` or `/srv/` paths | `homelab.mdc` — Services table, Backups |
+| Agent interaction preferences | `homelab.mdc` — Agent Behavior |
+| Planned service or migration | `plans.md` |
+| Planned improvement (e.g. hide service behind Caddy) | `plans.md` |
+| Backup strategy **before** implementation | `plans.md`; move to `homelab.mdc` Backups when live |
+
+## Do Not
+
+- Leave known-wrong info in the rule "for later"
+- Store the same infra facts in random README files instead of updating the rule (service-specific details belong in `services/{name}/`, canonical summary in `homelab.mdc`)
+- Duplicate roadmap items in `homelab.mdc` — summary pointer to `plans.md` is enough
+- Wait for the user to ask — update proactively when facts or plans emerge during work

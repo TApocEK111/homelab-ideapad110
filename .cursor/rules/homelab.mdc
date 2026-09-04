@@ -1,0 +1,111 @@
+---
+description: Homelab server context, services, and agent behavior for ideapad110
+alwaysApply: true
+---
+
+# Homelab Server Context
+
+This repo manages and documents a personal homelab on **ideapad110** (`tima@192.168.0.200`).
+
+## Host
+
+| Item | Value |
+|------|-------|
+| OS | Ubuntu 26.04 LTS (Resolute Raccoon), x86_64 |
+| Hardware | Lenovo IdeaPad 110-15ACL — AMD A8-7410, 6 GiB RAM |
+| Storage | Built-in HDD — configs in `/etc/{service}/`, hosted services data in `/srv/{service}/` |
+| GUI | On-demand **Sway** (swaybg, foot, grim/slurp, wl-clipboard, pipewire/wireplumber, xdg-desktop-portal-wlr, pavucontrol) |
+| SSH | Port 22, **key-only auth**, LAN-only |
+| Static IP | `192.168.0.200/24` (enp2s0) |
+
+## Services (Podman via systemd quadlets)
+
+| Service | Port(s) | Privilege | Config | Data | Repo docs | Notes |
+|---------|---------|-----------|--------|------|-----------|-------|
+| caddy | 80, 443 (→8080/8443) | rootless | `/etc/caddy/` | `/srv/caddy/` | `services/caddy/` | TLS reverse proxy; DuckDNS DNS-01; `homelab` network |
+| tg-ws-proxy | 1443 | rootless | config via quadlet arguments | no data | `services/tg-ws-proxy/` | Key-protected; direct exposure planned (revisit before internet) |
+| vaultwarden | — (via Caddy) | rootless | `/etc/vaultwarden/` | `/srv/vaultwarden/` | `services/vaultwarden/` | `https://tapocek.duckdns.org` |
+| adguardhome | 53 (→5353), admin via Caddy | rootless | `/etc/adguardhome/` | `/srv/adguardhome/` | `services/adguardhome/` | DNS on 5353 + iptables redirect; admin `https://adguard-tapocek.duckdns.org` |
+
+**Shared Podman network:** `homelab` (`services/podman/homelab.network`) — Caddy ↔ Vaultwarden ↔ AdGuard admin.
+
+**Quadlet paths:** rootless `~/.config/containers/systemd/`, rootful `/etc/containers/systemd/`
+
+**DoT (853):** Not needed on LAN — plain DNS (53) is sufficient for trusted local clients. Skip UFW rule for 853 unless exposing DNS externally later.
+
+## Firewall (UFW)
+
+Current rules (will change before internet exposure):
+
+```
+22/tcp      ALLOW  192.168.0.0/24   # SSH
+80/tcp      ALLOW  192.168.0.0/24   # Caddy HTTP (iptables 80→8080)
+443/tcp     ALLOW  192.168.0.0/24   # Caddy HTTPS (iptables 443→8443)
+53          ALLOW  192.168.0.0/24   # DNS (iptables 53→5353)
+1443        ALLOW  Anywhere         # tg-ws-proxy
+```
+
+**iptables redirects** (`/etc/ufw/before.rules`): `53→5353`, `80→8080`, `443→8443`. See `services/caddy/notes.md` and `services/adguardhome/notes.md`.
+
+**Current posture:** Server is **LAN-only** (no port forwarding yet), so permissive rules are not internet-exposed in practice. Tighten before going public.
+
+## DNS & Remote Access
+
+- **Domain:** `tapocek.duckdns.org` (+ `adguard-tapocek.duckdns.org` for AdGuard admin)
+- **LAN:** AdGuard Home is local DNS; rewrites `*.tapocek.duckdns.org` → `192.168.0.200` (split-horizon)
+- **Internet (planned):** widen Caddy UFW to world on 443; add **Authelia** for auth
+- **Exception:** tg-ws-proxy likely stays directly exposed (key-protected); reassess at internet exposure stage
+
+## Backups
+
+Encrypted cloud backup via **rustic** (host binary + rootful systemd timer, not Podman) to Google Drive (`opendal:gdrive`). Google sees ciphertext only. Docs and units: `services/rustic/`.
+
+| Item | Value |
+|------|-------|
+| Binary | `/usr/local/bin/rustic` |
+| Config | `/etc/rustic/` (`rustic.toml`; password and `gdrive.env` stay on the host) |
+| Timer | `rustic-backup.timer` (daily ~03:30) |
+| Snapshots | One per service: `caddy`, `vaultwarden`, `adguardhome` (`/etc` + `/srv` each); plus `ufw`, `quadlets` |
+
+Enable and verify on the host using `services/rustic/notes.md`. This is live disk + one encrypted offsite copy, not 3-2-1 (see `plans.md`). Do not put Jellyfin/media in this repo.
+
+## Development Plans
+
+Future work lives in **`plans.md`** at the repo root — not in this rule. Read it when discussing roadmap, new services, migrations, or improvements.
+
+| Category | Examples in `plans.md` |
+|----------|------------------------|
+| Planned services | Jellyfin, Radarr, Seafile (or alternative) |
+| Maybe planned | Soulseek |
+| Infrastructure | Ubuntu → Debian migration; 3-2-1 backup (second local/offline copy) |
+
+When a plan becomes reality, update `homelab.mdc` (and `services/{name}/` if applicable) and remove or adjust the entry in `plans.md`. Do not treat planned items here as current state.
+
+## Repo Structure
+
+```
+services/{name}/   # Per-service notes, quadlets, runbooks (no secrets)
+plans.md           # Roadmap and planned work (not current state)
+.cursor/rules/     # Agent context rules
+```
+
+| Path | Purpose |
+|------|---------|
+| `plans.md` | Development roadmap — planned services, improvements, infrastructure |
+| `services/podman/` | Shared Podman network quadlets |
+| `services/caddy/` | Caddy reverse proxy docs and deploy artifacts |
+| `services/tg-ws-proxy/` | tg-ws-proxy docs and deploy artifacts |
+| `services/vaultwarden/` | Vaultwarden docs and deploy artifacts |
+| `services/adguardhome/` | AdGuard Home docs and deploy artifacts |
+| `services/rustic/` | rustic backup profile, systemd units, restore runbook |
+
+**Convention:** When working on a service, read and update its `services/{name}/` folder. Add a new folder when a new hosted service is introduced. Server live configs/data stay on the host at `/etc/{service}/` and `/srv/{service}/`; this repo tracks documentation and deploy artifacts only — never commit secrets.
+
+## Agent Behavior
+
+1. **Correct firmly** on infra/security mistakes — explain why and propose a fix.
+2. **Verify before assuming** — quadlet paths, UFW rules, and service state may have changed.
+3. **Challenge risky choices** — world-open ports, missing TLS/auth, no backups for stateful services.
+4. **Minimize scope** — incremental, reversible changes; prefer quadlets and UFW over ad-hoc setup.
+5. **Ask for missing context** — new services, volume paths, and infra changes should be captured in `homelab.mdc` and the matching `services/{name}/` folder when introduced; future-only intent goes in `plans.md`.
+6. **Read `plans.md` for roadmap work** — do not infer planned services or migrations from this rule alone.

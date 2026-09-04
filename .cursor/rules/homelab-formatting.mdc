@@ -1,0 +1,12 @@
+---
+description: Indentation and whitespace — spaces only, no tabs
+alwaysApply: true
+---
+
+# Formatting
+
+Use **spaces** for indentation in all repo files. Do not use tab characters.
+
+- **1 indentation level = 4 spaces**
+- When editing existing files, match surrounding indentation; convert tabs to spaces if you touch the file.
+- Config files (Caddyfile, `.caddy`, quadlets, YAML, markdown) follow the same rule.

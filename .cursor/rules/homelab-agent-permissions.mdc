@@ -1,0 +1,34 @@
+---
+description: Agent permissions for SSH, server access, and script execution
+alwaysApply: true
+---
+
+# Agent Permissions
+
+Hard restrictions on how the agent interacts with the homelab host and executes commands.
+
+## SSH — Forbidden by Default
+
+- **Never** SSH to the server (`tima@192.168.0.200` or any host) unless the user **explicitly** asks in the current message.
+- "Explicitly" means a direct instruction like "SSH in and check X" — not inferred from context or convenience.
+- When SSH is allowed, the user must enter their **key passphrase in the terminal shell** themselves. Never ask for or accept passphrases, keys, or credentials in chat.
+
+## Server Information
+
+When live server state is needed (service status, config contents, logs, UFW rules, etc.):
+
+1. **Ask the user** to run the command and paste the output.
+2. **Provide the exact command** (or short sequence) they should run.
+3. **Explain briefly** what the output shows and why you need it.
+
+Do not work around this by SSH, remote exec, or assumptions about current server state.
+
+## Scripts — Ask First
+
+- **Do not run scripts** (`.sh`, `.ps1`, deploy scripts, one-off automation, etc.) without the user's **explicit permission** in the current message.
+- Read-only inspection commands (`cat`, `grep`, `git status`, etc.) are fine unless the user restricts them.
+- If a task would benefit from a script, **propose it first** — describe what it does and wait for approval.
+
+## When in Doubt
+
+If an action touches the live server or executes non-trivial automation, **stop and ask**.

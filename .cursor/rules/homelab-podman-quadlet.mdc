@@ -1,0 +1,29 @@
+---
+description: Podman systemd Quadlet unit files — follow official podman-systemd.unit(5)
+globs: services/**/*.container,**/*.container,**/*.volume,**/*.network,**/*.pod
+alwaysApply: false
+---
+
+# Podman Quadlet
+
+**Authority:** [podman-systemd.unit(5)](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html) — every `[Container]` / `[Volume]` / `[Network]` / `[Pod]` key must exist there. CLI: [podman-quadlet(1)](https://docs.podman.io/en/latest/markdown/podman-quadlet.1.html).
+
+## Homelab paths
+
+| Privilege | Install path on host |
+|-----------|----------------------|
+| Rootless | `~/.config/containers/systemd/` |
+| Rootful | `/etc/containers/systemd/` |
+
+Default new services to **rootless**. Rootful only with documented justification in `services/{name}/` and `homelab.mdc`.
+
+## Rules
+
+1. Use supported section names and keys from the man page — no invented `[Container]` options.
+2. `[Unit]` / `[Install]` follow [systemd.unit(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html); rootful system units often use `WantedBy=multi-user.target`, rootless user units `default.target`.
+3. `PublishPort=host:container[/proto]` — match UFW and the services table in `homelab.mdc`.
+4. Volumes: host paths `/etc/{service}/` (config), `/srv/{service}/` (data) unless upstream docs require otherwise.
+5. Secrets via `Secret=` / `EnvironmentFile=` — never commit secrets; repo holds quadlet templates only.
+6. After edits, remind: copy to host quadlet path → `systemctl --user daemon-reload` (or `sudo systemctl daemon-reload` for rootful) → `enable --now`.
+
+When unsure, fetch or cite the man page section — do not guess quadlet syntax.
