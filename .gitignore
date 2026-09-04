@@ -1,0 +1,10 @@
+# OS
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# Host-only secrets — never commit
+*.env
+password
+credentials.json
+gdrive.env
