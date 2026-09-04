@@ -1,0 +1,25 @@
+---
+description: tg-ws-proxy-rs container args — follow upstream README
+globs: services/tg-ws-proxy/**
+alwaysApply: false
+---
+
+# tg-ws-proxy-rs
+
+**Authority:** [valnesfjord/tg-ws-proxy-rs README](https://github.com/valnesfjord/tg-ws-proxy-rs#readme). Cloudflare routing: [docs/CfProxy.md](https://github.com/valnesfjord/tg-ws-proxy-rs/blob/main/docs/CfProxy.md).
+
+## Homelab layout
+
+- **Rootless** quadlet; image `docker.io/valnesfjord/tg-ws-proxy-rs`.
+- Port `1443:1443`; `--host 0.0.0.0` for LAN/internet reachability.
+- `--secret` (32 hex chars) — key-protected; keep out of repo commits (rotate if leaked).
+- Likely stays **directly exposed** when internet-facing; not behind Caddy.
+
+## Rules
+
+1. Container `Exec=` flags must match README CLI options (`--port`, `--host`, `--secret`, etc.) or env equivalents (`TG_PORT`, `TG_HOST`, `TG_SECRET`, …).
+2. Do not add flags absent from README/docs (e.g. `--cf-domain`) unless user requests that deployment mode.
+3. For production exposure: prefer explicit `--secret`; document the `tg://` link setup from README Telegram Desktop section.
+4. UFW `1443` rule must stay aligned with `homelab.mdc` before port forwarding.
+
+Check README for flag renames on image updates — this project evolves quickly.
