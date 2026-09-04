@@ -1,0 +1,16 @@
+[Unit]
+Description=Homelab rustic backup to Google Drive
+Documentation=https://rustic.cli.rs/docs
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/rustic/gdrive.env
+ExecStart=/usr/local/bin/rustic backup
+ExecStart=/usr/local/bin/rustic forget
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+# Default oneshot timeout is 90s; Drive backups can take much longer.
+TimeoutStartSec=6h

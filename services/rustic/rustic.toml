@@ -1,0 +1,71 @@
+# Host copy: /etc/rustic/rustic.toml
+# Do not put passwords or OAuth tokens in this file.
+# Google Drive credentials come from /etc/rustic/gdrive.env (OPENDAL_*).
+#
+# Docs: https://rustic.cli.rs/docs/commands/init/configuration_file.html
+# GDrive: https://rustic.cli.rs/docs/commands/init/services.html
+# OpenDAL: https://opendal.apache.org/docs/rust/opendal/services/struct.Gdrive.html
+
+[repository]
+repository = "opendal:gdrive"
+password-file = "/etc/rustic/password"
+
+[repository.options]
+root = "/ideapad110-homelab"
+# Burst must be greater than pack size (default 32 MiB).
+throttle = "1MB,64MB"
+
+[forget]
+prune = true
+keep-daily = 7
+keep-weekly = 4
+keep-monthly = 6
+
+[backup]
+skip-if-unchanged = true
+exclude-if-present = [".nobackup", "CACHEDIR.TAG"]
+
+[[backup.snapshots]]
+name = "caddy"
+label = "caddy"
+sources = [
+    "/etc/caddy",
+    "/srv/caddy",
+]
+
+[[backup.snapshots]]
+name = "vaultwarden"
+label = "vaultwarden"
+sources = [
+    "/etc/vaultwarden",
+    "/srv/vaultwarden",
+]
+
+# Consistent Vaultwarden SQLite copy (live db.sqlite3 is not crash-safe to copy).
+[backup.snapshots.hooks]
+run-before = [
+    { command = "sqlite3", args = ["/srv/vaultwarden/db.sqlite3", ".backup /srv/vaultwarden/db.backup.sqlite3"] },
+]
+
+[[backup.snapshots]]
+name = "adguardhome"
+label = "adguardhome"
+sources = [
+    "/etc/adguardhome",
+    "/srv/adguardhome",
+]
+
+[[backup.snapshots]]
+name = "ufw"
+label = "ufw"
+sources = [
+    "/etc/ufw",
+]
+
+# Shared rootless quadlets (includes tg-ws-proxy; no /etc or /srv of its own).
+[[backup.snapshots]]
+name = "quadlets"
+label = "quadlets"
+sources = [
+    "/home/tima/.config/containers/systemd",
+]

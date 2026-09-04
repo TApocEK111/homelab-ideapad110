@@ -1,0 +1,30 @@
+---
+description: rustic encrypted Google Drive backups — follow official rustic and OpenDAL docs
+globs: services/rustic/**
+alwaysApply: false
+---
+
+# rustic
+
+**Authority:** [rustic user documentation](https://rustic.cli.rs/docs). Verify every key against [configuration file](https://rustic.cli.rs/docs/commands/init/configuration_file.html) and in-repo [config/full.toml](https://github.com/rustic-rs/rustic/blob/main/config/full.toml) before changing profiles.
+
+| Topic | Doc |
+|-------|-----|
+| GDrive (OpenDAL) | [Supported services](https://rustic.cli.rs/docs/commands/init/services.html), [Gdrive](https://opendal.apache.org/docs/rust/opendal/services/struct.Gdrive.html), [gdrive.toml](https://github.com/rustic-rs/rustic/blob/main/config/services/gdrive.toml) |
+| Env for options | [config/README.md](https://github.com/rustic-rs/rustic/blob/main/config/README.md) — kebab → `RUSTIC_REPO_OPT_*`; OpenDAL snake_case → `OPENDAL_*` |
+| rclone fallback | [rclone](https://rustic.cli.rs/docs/commands/init/rclone.html) |
+| Timer / service | [systemd.timer(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html), [systemd.service(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html) |
+
+## Homelab layout
+
+- Host binary + **rootful** systemd timer (not Podman). Config `/etc/rustic/`; binary `/usr/local/bin/rustic`.
+- Repo: `opendal:gdrive`, Drive root `/ideapad110-homelab`. Secrets: `/etc/rustic/password`, `/etc/rustic/gdrive.env` — never in git.
+- One snapshot per service (`caddy`, `vaultwarden`, `adguardhome`) plus `ufw` and `quadlets`. Each service snapshot includes that service's `/etc` and `/srv`. SQLite dump hook only on `vaultwarden`.
+
+## Rules
+
+1. Prefer upstream TOML keys (`password-file`, `[[backup.snapshots]]`, `keep-daily`) over memory.
+2. GDrive OAuth fields are OpenDAL snake_case: `OPENDAL_CLIENT_ID`, `OPENDAL_CLIENT_SECRET`, `OPENDAL_REFRESH_TOKEN`. Do not use `RUSTIC_REPO_OPT_*` for those.
+3. OpenDAL `throttle` burst must exceed pack size. `throttle` is OpenDAL-only — drop it if switching to rclone.
+4. Do not commit passwords, refresh tokens, or client secrets. Host-only files stay on the server.
+5. After OpenDAL failures (`rustic check` pack size 0), switch `repository` to rclone and re-init in a new folder — see `services/rustic/notes.md`.

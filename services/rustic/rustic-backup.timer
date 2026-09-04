@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily rustic backup to Google Drive
+Documentation=https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+RandomizedDelaySec=30min
+Persistent=true
+Unit=rustic-backup.service
+
+[Install]
+WantedBy=timers.target
