@@ -1,0 +1,26 @@
+---
+description: AdGuard Home DNS and Docker layout — follow AdGuard Home wiki
+globs: services/adguardhome/**
+alwaysApply: false
+---
+
+# AdGuard Home
+
+**Authority:** [AdGuard Home wiki](https://github.com/AdguardTeam/AdGuardHome/wiki) — [Configuration](https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration), [Docker](https://github.com/AdguardTeam/AdGuardHome/wiki/Docker).
+
+## Homelab layout
+
+- **Rootless** quadlet; DNS on host `5353` with UFW iptables `53→5353` redirect.
+- Work dir: `/srv/adguardhome/` → `/opt/adguardhome/work/`. Config: `/etc/adguardhome/` → `/opt/adguardhome/conf/`.
+- DNS: `5353:53` tcp/udp on host; admin via Caddy at `https://adguard-tapocek.duckdns.org` (not host-published on 4179).
+- Podman network: `homelab` — Caddy reaches admin on `adguardhome:3000`.
+- Role: LAN DNS, ad blocking, `*.tapocek.duckdns.org` → `192.168.0.200` rewrites. DoT (853) not used on LAN.
+
+## Rules
+
+1. `AdGuardHome.yaml` keys and defaults — follow [Configuration](https://github.com/AdguardTeam/AdGuardHome/wiki/Configuration) wiki; prefer UI-exported structure for complex blocks.
+2. Docker bind paths must match [Docker](https://github.com/AdguardTeam/AdGuardHome/wiki/Docker) wiki (`/opt/adguardhome/work`, `/opt/adguardhome/conf`).
+3. Upstream DNS: documented choice in `services/adguardhome/notes.md` (Quad9 DoH/TLS) — do not swap without user intent.
+4. Behind Caddy: set `dns.trusted_proxies` to homelab network subnet; do not enable AdGuard HTTPS on 443.
+
+Do not enable external DNS exposure or loosen `bind_host` without explicit user approval and UFW updates.

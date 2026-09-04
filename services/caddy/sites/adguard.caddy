@@ -1,0 +1,8 @@
+adguard.tapocek.duckdns.org {
+    import tls_duckdns {env.DUCKDNS_ADGUARD_API_TOKEN}
+    import proxy_common adguard.tapocek.duckdns.org
+
+    reverse_proxy systemd-adguardhome:3000 {
+        header_up X-Real-IP {remote_host}
+    }
+}
