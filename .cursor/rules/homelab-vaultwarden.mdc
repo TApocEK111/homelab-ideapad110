@@ -1,0 +1,31 @@
+---
+description: Vaultwarden deploy and env config — follow upstream wiki
+globs: services/vaultwarden/**
+alwaysApply: false
+---
+
+# Vaultwarden
+
+**Authority:** [Vaultwarden wiki](https://github.com/dani-garcia/vaultwarden/wiki) — especially [Configuration overview](https://github.com/dani-garcia/vaultwarden/wiki/Configuration-overview) and [Enabling admin page](https://github.com/dani-garcia/vaultwarden/wiki/Enabling-admin-page).
+
+| Topic | Doc |
+|-------|-----|
+| Env variables | [Configuration overview](https://github.com/dani-garcia/vaultwarden/wiki/Configuration-overview) |
+| Reverse proxy | Same page, Reverse Proxy section |
+| Container | [Pre-built images](https://github.com/dani-garcia/vaultwarden/wiki/Building-binary#pre-built-images) |
+
+## Homelab layout
+
+- **Rootless** quadlet; `https://tapocek.duckdns.org` via Caddy (no host port).
+- Config: `/etc/vaultwarden/` (`EnvironmentFile`, secrets). Data: `/srv/vaultwarden/` → `/data/`.
+- Image: `ghcr.io/dani-garcia/vaultwarden:latest` (see wiki for tag pinning guidance).
+
+## Rules
+
+1. Env vars must match wiki names (`DOMAIN`, `ROCKET_PORT`, `ADMIN_TOKEN`, etc.) — no invented variables.
+2. Behind Caddy: set `DOMAIN` to the public HTTPS URL; configure proxy headers per wiki reverse-proxy section.
+3. Reachable only via Caddy on `homelab` network (`vaultwarden:80`); no host `PublishPort`.
+3. `ADMIN_TOKEN` via Podman secret / env file — never in repo.
+4. Healthcheck: use image's `/healthcheck.sh` as in upstream container docs.
+
+Verify each new env var on the wiki before adding to `/etc/vaultwarden/config`.

@@ -1,0 +1,20 @@
+[Unit]
+Description=Vaultwarden container
+After=network-online.target homelab-network.service
+
+[Container]
+AutoUpdate=registry
+Image=ghcr.io/dani-garcia/vaultwarden:latest
+Exec=/start.sh
+EnvironmentFile=/etc/vaultwarden/config
+Network=homelab.network
+Volume=/srv/vaultwarden/:/data/
+PublishPort=10455:80
+HealthCmd=/healthcheck.sh
+HealthInterval=120s
+HealthRetries=10
+HealthTimeout=45s
+Secret=vaultwarden_admin_token,type=env,target=ADMIN_TOKEN
+
+[Install]
+WantedBy=default.target

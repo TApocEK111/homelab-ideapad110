@@ -1,0 +1,18 @@
+(admin_redir) {
+    @admin {
+        path /admin*
+        not client_ip private_ranges
+    }
+    redir @admin /
+}
+
+vault.tapocek.duckdns.org {
+    import tls_duckdns {env.DUCKDNS_API_TOKEN}
+    import proxy_common vault.tapocek.duckdns.org
+
+    import admin_redir
+
+    reverse_proxy systemd-vaultwarden:80 {
+        header_up X-Real-IP {remote_host}
+    }
+}
