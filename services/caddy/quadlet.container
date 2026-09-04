@@ -1,0 +1,20 @@
+[Unit]
+Description=Caddy reverse proxy container
+After=network-online.target homelab-network.service
+
+[Container]
+AutoUpdate=registry
+Image=ghcr.io/serfriz/caddy-duckdns:latest
+Network=homelab.network
+PublishPort=8080:80/tcp
+PublishPort=8443:443/tcp
+PublishPort=8443:443/udp
+Volume=/etc/caddy/:/etc/caddy/
+Volume=/srv/caddy/static:/srv/
+Volume=/srv/caddy/data:/data/
+Volume=/srv/caddy/config:/config/
+EnvironmentFile=/etc/caddy/env
+
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,34 @@
+---
+description: Caddyfile and reverse-proxy snippets — follow official Caddy docs
+globs: services/caddy/**,**/*.caddy,**/Caddyfile
+alwaysApply: false
+---
+
+# Caddy
+
+**Authority:** [Caddyfile syntax](https://caddyserver.com/docs/caddyfile) and directive pages linked from it.
+
+| Topic | Official doc |
+|-------|----------------|
+| Reverse proxy | [reverse_proxy](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy) |
+| Snippets / reuse | [import](https://caddyserver.com/docs/caddyfile/directives/import) |
+| TLS / ACME | [Automatic HTTPS](https://caddyserver.com/docs/automatic-https) |
+| Trusted proxies | [reverse_proxy > headers](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#headers) |
+
+## Homelab layout
+
+- Image: `ghcr.io/serfriz/caddy-duckdns:2` (DuckDNS DNS-01 module).
+- **Rootless** quadlet; host ports `8080:80`, `8443:443` with UFW iptables `80→8080`, `443→8443`.
+- Config: `/etc/caddy/` (Caddyfile, `sites/`, `snippets/`). Data: `/srv/caddy/` → `/data/` (ACME, logs).
+- Podman network: `homelab` — upstreams `vaultwarden:80`, `adguardhome:3000`.
+- Sites: `tapocek.duckdns.org`, `adguard-tapocek.duckdns.org` — one file per service in `sites/`, no wildcards.
+
+## Rules
+
+1. Use Caddyfile directives and placeholders from official docs (`{remote_host}`, `{host}`, etc.) — verify placeholder names on the directive page.
+2. `reverse_proxy` upstreams: use container names on `homelab` network, not host localhost.
+3. Forwarded headers: match [Vaultwarden proxy docs](https://github.com/dani-garcia/vaultwarden/wiki/Configuration-overview#reverse-proxy) when proxying Vaultwarden.
+4. New services: add `sites/{name}.caddy`, join `homelab.network`, avoid new host ports when possible.
+5. DuckDNS tokens: separate env vars per DuckDNS registration (`DUCKDNS_API_TOKEN`, `DUCKDNS_ADGUARD_API_TOKEN`).
+
+Fetch directive docs when adding unfamiliar blocks — Caddy v2 syntax differs from nginx.

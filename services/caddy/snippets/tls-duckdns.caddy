@@ -1,0 +1,6 @@
+(tls_duckdns) {
+    tls {
+        dns duckdns {env.DUCKDNS_API_TOKEN}
+        propagation_timeout -1
+    }
+}

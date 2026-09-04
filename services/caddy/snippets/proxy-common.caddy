@@ -1,0 +1,9 @@
+(proxy_common) {
+    encode zstd gzip
+    log {
+        output file /data/logs/{args[0]}.log {
+            roll_size 10MB
+            roll_keep 10
+        }
+    }
+}
