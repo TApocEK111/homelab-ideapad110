@@ -1,19 +1,16 @@
-# Host copy: /etc/rustic/rustic.toml
-# Do not put passwords or OAuth tokens in this file.
-# Google Drive credentials come from /etc/rustic/gdrive.env (OPENDAL_*).
-#
 # Docs: https://rustic.cli.rs/docs/commands/init/configuration_file.html
 # GDrive: https://rustic.cli.rs/docs/commands/init/services.html
 # OpenDAL: https://opendal.apache.org/docs/rust/opendal/services/struct.Gdrive.html
 
 [repository]
 repository = "opendal:gdrive"
-password-file = "/etc/rustic/password"
+password = "password"
 
 [repository.options]
 root = "/ideapad110-homelab"
-# Burst must be greater than pack size (default 32 MiB).
-throttle = "1MB,64MB"
+refresh_token = "token"
+client_id = "id"
+client_secret = "secret"
 
 [forget]
 prune = true
@@ -39,12 +36,6 @@ label = "vaultwarden"
 sources = [
     "/etc/vaultwarden",
     "/srv/vaultwarden",
-]
-
-# Consistent Vaultwarden SQLite copy (live db.sqlite3 is not crash-safe to copy).
-[backup.snapshots.hooks]
-run-before = [
-    { command = "sqlite3", args = ["/srv/vaultwarden/db.sqlite3", ".backup /srv/vaultwarden/db.backup.sqlite3"] },
 ]
 
 [[backup.snapshots]]
