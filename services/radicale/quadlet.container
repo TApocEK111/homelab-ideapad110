@@ -1,0 +1,16 @@
+[Unit]
+Description=Free and Open-Source CalDAV and CardDAV Server
+After=network-online.target homelab-network.service
+
+[Container]
+AutoUpdate=registry
+Image=ghcr.io/kozea/radicale:latest
+Network=homelab.network
+PublishPort=5232:5232/tcp
+PublishPort=5232:5232/udp
+Volume=/etc/radicale/:/etc/radicale/
+Volume=/srv/radicale:/var/lib/radicale
+
+
+[Install]
+WantedBy=default.target
