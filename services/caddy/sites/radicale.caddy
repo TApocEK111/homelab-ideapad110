@@ -1,0 +1,24 @@
+# Based on an example from https://github.com/Kozea/Radicale/discussions/1753
+
+dav.tapocek.duckdns.org {
+    import tls_duckdns {env.DUCKDNS_API_TOKEN}
+    import proxy_common dav.tapocek.duckdns.org
+
+    # Append / if GETting /.web
+    @get-root {
+        method GET
+        path /.web
+    }
+
+    redir @get-root /.web/
+
+    # Do not auth on /.web/* or /.token/*
+    @not-auth {
+        not path /.web/* /.token/*
+    }
+
+    reverse_proxy systemd-radicale:5232 {
+        header_up Host dav.tapocek.duckdns.org
+        header_up X-Forwarded-Port 5232
+    }
+}

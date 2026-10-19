@@ -60,3 +60,11 @@ label = "quadlets"
 sources = [
     "/home/tima/.config/containers/systemd",
 ]
+
+[[backup.snapshots]]
+name = "radicale"
+label = "radicale"
+sources = [
+    "/etc/radicale",
+    "/srv/radicale",
+]

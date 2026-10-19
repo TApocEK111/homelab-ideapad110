@@ -1,0 +1,8 @@
+[auth]
+type = htpasswd
+htpasswd_filename = /etc/radicale/users
+htpasswd_encryption = autodetect
+# Average delay after failed login attempts in seconds
+# Also used for invalid/not-existing/not-enabled share-by-token (>= 3.7.0)
+delay = 1
+cache_logins = True

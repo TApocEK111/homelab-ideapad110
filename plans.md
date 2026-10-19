@@ -1,8 +1,9 @@
 # Planned services:
 ## Strongly planned:
-1. Jellyfin
-2. Seafile (or better suited cloud storage alternative)
-3. Radicale
+1. Navidrome
+2. ownCloud - refra, cloud storage
+3. Radicale - sync contacts, calendar, notes
+4. syncthing - backups from phone
 
 ## Maybe planned:
 - Soulseek for sharing with community
