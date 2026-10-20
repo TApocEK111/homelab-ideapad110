@@ -6,9 +6,8 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-EnvironmentFile=/etc/rustic/gdrive.env
-ExecStart=/usr/local/bin/rustic backup
-ExecStart=/usr/local/bin/rustic forget
+ExecStart=/home/tima/.cargo/bin/rustic backup
+ExecStart=/home/tima/.cargo/bin/rustic forget
 Nice=10
 IOSchedulingClass=best-effort
 IOSchedulingPriority=7
