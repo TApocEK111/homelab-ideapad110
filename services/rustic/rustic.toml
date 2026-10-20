@@ -77,3 +77,11 @@ sources = [
     "/etc/radicale",
     "/srv/radicale",
 ]
+
+[[backup.snapshots]]
+name = "syncthing"
+label = "syncthing"
+sources = [
+    "/home/tima/.local/state/syncthing",
+    "/home/tima/sync"
+]

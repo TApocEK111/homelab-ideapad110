@@ -1,0 +1,8 @@
+sync.tapocek.duckdns.org {
+    import tls_duckdns {env.DUCKDNS_API_TOKEN}
+    import proxy_common sync.tapocek.duckdns.org
+
+    reverse_proxy http://host.containers.internal:8384 {
+            header_up Host {upstream_hostport}
+    }
+}
