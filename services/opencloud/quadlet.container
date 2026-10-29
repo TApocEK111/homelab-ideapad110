@@ -1,0 +1,45 @@
+[Unit]
+Description=OpenCloud is the open source platform for file management, sharing and collaboration. Simple and sovereign.
+After=network-online.target homelab-network.service
+
+[Container]
+Image=opencloudeu/opencloud:latest
+AutoUpdate=registry
+Network=homelab.network
+
+UserNS=keep-id
+
+Entrypoint=["/bin/sh"]
+Exec=-c 'opencloud init || true; opencloud server'
+
+Environment=OC_URL=https://cloud.tapocek.duckdns.org
+Environment=OC_LOG_LEVEL=warn
+Environment=OC_LOG_COLOR=true
+Environment=OC_LOG_PRETTY=true
+# do not use SSL between reverse proxy and OpenCloud
+Environment=PROXY_TLS=false
+# INSECURE: needed if OpenCloud / Reverse proxy is using self generated certificates
+Environment=OC_INSECURE=false
+# bind to all interfaces
+Environment=PROXY_HTTP_ADDR=0.0.0.0:9200
+# basic auth (not recommended, but needed for eg. WebDav clients that do not support OpenID Connect)
+Environment=PROXY_ENABLE_BASIC_AUTH=true
+# admin user password (this overrides the admin password from the configuration file)
+Environment=IDM_ADMIN_PASSWORD=rootrootroot
+# demo users
+Environment=IDM_CREATE_DEMO_USERS=false
+# enable to allow using the banned passwords list
+Environment=OC_PASSWORD_POLICY_BANNED_PASSWORDS_LIST=banned-password-list.txt
+
+Environment=PROXY_CSP_CONFIG_FILE_LOCATION=/etc/opencloud/csp.yaml
+
+Volume=/etc/opencloud:/etc/opencloud:Z
+Volume=/srv/opencloud:/var/lib/opencloud:Z
+
+# ports are not published bc of the podman network
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

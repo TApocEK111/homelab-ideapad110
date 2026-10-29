@@ -1,0 +1,8 @@
+cloud.tapocek.duckdns.org {
+    import tls_duckdns {env.DUCKDNS_API_TOKEN}
+    import proxy_common cloud.tapocek.duckdns.org
+
+    reverse_proxy systemd-opencloud:9200 {
+        header_up X-Real-IP {remote_host}
+    }
+}

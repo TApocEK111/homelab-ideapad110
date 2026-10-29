@@ -76,3 +76,11 @@ sources = [
     "/home/tima/.local/state/syncthing",
     "/home/tima/sync"
 ]
+
+[[backup.snapshots]]
+name = "opencloud"
+label = "opencloud"
+sources = [
+    "/etc/opencloud",
+    "/srv/opencloud"
+]
