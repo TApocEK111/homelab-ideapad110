@@ -9,7 +9,6 @@ Exec=/start.sh
 EnvironmentFile=/etc/vaultwarden/config
 Network=homelab.network
 Volume=/srv/vaultwarden/:/data/
-PublishPort=10455:80
 HealthCmd=/healthcheck.sh
 HealthInterval=120s
 HealthRetries=10

@@ -10,7 +10,6 @@ Volume=/srv/adguardhome/:/opt/adguardhome/work/
 Volume=/etc/adguardhome/:/opt/adguardhome/conf/
 PublishPort=5353:53/udp
 PublishPort=5353:53/tcp
-PublishPort=4179:3000/tcp
 
 [Install]
 WantedBy=default.target
