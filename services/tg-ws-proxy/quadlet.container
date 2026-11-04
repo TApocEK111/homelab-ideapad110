@@ -7,7 +7,7 @@ Image=docker.io/valnesfjord/tg-ws-proxy-rs
 Label="tg-ws-proxy"
 AutoUpdate=registry
 PublishPort=1443:1443
-Exec=--secret "REPLACE_WITH_HOST_SECRET" --host 0.0.0.0
+Exec=--secret "REPLACE_WITH_HOST_SECRET" --host 0.0.0.0 --default-domains
 
 [Install]
 WantedBy=default.target
