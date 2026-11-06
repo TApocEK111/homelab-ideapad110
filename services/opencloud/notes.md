@@ -4,7 +4,6 @@
 
 # Backup
 - via rustic
-- .config/opencloud
 - /etc/opencloud
 - /srv/opencloud
 
