@@ -10,6 +10,5 @@ Volume=/etc/radicale/:/etc/radicale/
 Volume=/srv/radicale/:/var/lib/radicale/
 UserNS=keep-id
 
-
 [Install]
 WantedBy=default.target
