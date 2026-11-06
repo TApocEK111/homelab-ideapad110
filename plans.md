@@ -1,9 +1,7 @@
 # Planned services:
 ## Strongly planned:
-1. Navidrome
-2. ownCloud - refra, cloud storage
-3. Radicale - sync contacts, calendar, notes
-4. syncthing - backups from phone
+- [ ] add radicale holidays subscription via script
+- [ ] add backup of ufw rules
 
 ## Maybe planned:
 - Soulseek for sharing with community
