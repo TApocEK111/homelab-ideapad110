@@ -17,6 +17,3 @@
 
 ## Backup
 - rustic backup of /etc/radicale and /srv/radicale
-
-## Firewall
-- open 5232 for anyone on tailscale for now
