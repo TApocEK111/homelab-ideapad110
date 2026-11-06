@@ -84,3 +84,10 @@ sources = [
     "/etc/opencloud",
     "/srv/opencloud"
 ]
+
+[[backup.snapshots]]
+name = "navidrome"
+label = "navidrome"
+sources = [
+    "/srv/navidrome"
+]

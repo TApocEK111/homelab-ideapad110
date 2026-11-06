@@ -1,0 +1,8 @@
+music.tapocek.duckdns.org {
+    import tls_duckdns {env.DUCKDNS_API_TOKEN}
+    import proxy_common music.tapocek.duckdns.org
+
+    reverse_proxy systemd-navidrome:4533 {
+        header_up X-Real-IP {remote_host}
+    }
+}

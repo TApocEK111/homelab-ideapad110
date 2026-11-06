@@ -1,0 +1,14 @@
+[Unit]
+Description=A self-hosted, open source music server and streamer.
+
+[Container]
+Image=ghcr.io/navidrome/navidrome:latest
+AutoUpdate=registry
+UserNS=keep-id
+Network=homelab.network
+Volume=/srv/navidrome:/data:z
+Volume=~/Music:/music:ro,z
+
+[Service]
+Restart=on-failure
+TimeoutStartSec=30
