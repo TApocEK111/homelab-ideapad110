@@ -1,6 +1,6 @@
 # Planned services:
 ## Strongly planned:
-- [ ] add radicale holidays subscription via script
+- [x] add radicale holidays subscription via script
 - [ ] add backup of ufw rules
 
 ## Maybe planned:
