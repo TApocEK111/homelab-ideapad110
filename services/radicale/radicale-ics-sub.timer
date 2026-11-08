@@ -1,0 +1,14 @@
+[Unit]
+Description=Run Radicale ICS import every 6 months
+Requires=radicale-ics-sub.service
+
+[Timer]
+# Run on the 1st of January and July at 03:15
+OnCalendar=*-01,07-01 03:15:00
+# If the machine was off at that time, run at next boot
+Persistent=true
+# Add a small random delay so multiple instances don't hit the server at once
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target

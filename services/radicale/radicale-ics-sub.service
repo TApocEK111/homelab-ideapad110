@@ -1,0 +1,23 @@
+[Unit]
+Description=Import ICS feed into Radicale calendar
+Documentation=man:curl(1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Adjust path to wherever you saved the script
+ExecStart=/home/tima/.local/bin/post_ics_to_radicale.sh "https://ics.calendarlabs.com/65/8125a73a/Russia_Holidays.ics"
+
+# Credentials and config passed via environment
+# port 8443 because of rootles caddy
+Environment=RADICALE_USER=tima
+Environment=RADICALE_PASS=mypassword
+Environment=RADICALE_URL=https://dav.tapocek.duckdns.org:8443
+Environment=RADICALE_CALENDAR=russiaholidays
+
+# Timeouts and safety
+TimeoutStartSec=5min
+
+# Optional: allow only specific exit codes to be considered success
+SuccessExitStatus=0

@@ -62,6 +62,20 @@ sources = [
 ]
 
 [[backup.snapshots]]
+name = "units"
+label = "units"
+sources = [
+    "/home/tima/.config/systemd/user",
+]
+
+[[backup.snapshots]]
+name = "scripts"
+label = "scripts"
+sources = [
+    "/home/tima/.local/bin",
+]
+
+[[backup.snapshots]]
 name = "radicale"
 label = "radicale"
 sources = [
